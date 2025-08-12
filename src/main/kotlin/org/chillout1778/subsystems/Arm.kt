@@ -26,6 +26,8 @@ import kotlin.math.abs
 import kotlin.system.measureTimeMillis
 
 object Arm : SubsystemBase() {
+    val CAN_BUS = "can_s4"
+
     enum class RollerState(val dutyCycle: Double) {
         Off(0.0),
         SlowIdle(-.035),
@@ -90,12 +92,12 @@ object Arm : SubsystemBase() {
         }
     }
 
-    private val absoluteEncoder = CANcoder(Constants.CanIds.ARM_ENCODER)
-    val armPivotMotor = TalonFX(Constants.CanIds.ARM_PIVOT_MOTOR).apply {
+    private val absoluteEncoder = CANcoder(Constants.CanIds.ARM_ENCODER, CAN_BUS)
+    val armPivotMotor = TalonFX(Constants.CanIds.ARM_PIVOT_MOTOR, CAN_BUS).apply {
         configurator.apply(Constants.Arm.PIVOT_CONFIG)
     }
 
-    val rollerMotor = TalonFX(Constants.CanIds.ARM_ROLLER_MOTOR).apply{
+    val rollerMotor = TalonFX(Constants.CanIds.ARM_ROLLER_MOTOR, CAN_BUS).apply{
         configurator.apply(CurrentLimitsConfigs().withStatorCurrentLimit(80.0))
     }
 

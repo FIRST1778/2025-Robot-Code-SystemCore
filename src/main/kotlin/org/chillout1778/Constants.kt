@@ -258,7 +258,7 @@ object Constants{
         const val PIVOT_ENCODER_RATIO = (36.0 / 18.0) * (36.0 / 18.0) * (60.0 / 24.0) * (12.0 / 54.0)
 
         const val PIVOT_GEAR_RATIO = (12.0 / 60.0) * (20.0 / 60.0) * (12.0 / 54.0)
-        const val PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = .7209
+        const val PIVOT_ABS_ENCODER_OFFSET_ENCODER_ROTATIONS = .8476
 
         val CORAL_CENTER_OFFSET = Units.inchesToMeters(9.5)
         val SAFE_DISTANCE_FROM_REEF_CENTER = Units.inchesToMeters(70.0)

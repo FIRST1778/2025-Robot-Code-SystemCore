@@ -1,5 +1,3 @@
-@file:JvmName("Main")
-
 package org.chillout1778
 
 import edu.wpi.first.wpilibj.RobotBase

@@ -6,6 +6,7 @@ import com.ctre.phoenix6.hardware.TalonFX
 import com.ctre.phoenix6.signals.InvertedValue
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.util.sendable.SendableBuilder
+import edu.wpi.first.wpilibj.CAN
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.SubsystemBase
@@ -15,6 +16,8 @@ import org.chillout1778.Utils
 import kotlin.math.abs
 
 object Intake : SubsystemBase(){
+    val CAN_BUS = "can_s3"
+
     // Angles measured positive downward, and the stowed starting position is 0.0.
     enum class PivotState(val angleSetpoint: Double) {
         Down(Math.toRadians(126.0)),
@@ -49,13 +52,13 @@ object Intake : SubsystemBase(){
         else RollerState.Off
     }
 
-    private val pivotMotor = TalonFX(Constants.CanIds.INTAKE_PIVOT_MOTOR).apply {
+    private val pivotMotor = TalonFX(Constants.CanIds.INTAKE_PIVOT_MOTOR, CAN_BUS).apply {
         configurator.apply(Constants.Intake.PIVOT_CONFIG)
     }
-    private val rollerMotor = TalonFX(Constants.CanIds.INTAKE_ROLLER_MOTOR).apply {
+    private val rollerMotor = TalonFX(Constants.CanIds.INTAKE_ROLLER_MOTOR, CAN_BUS).apply {
         configurator.apply(MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive))
     }
-    private val centeringMotor = TalonFX(Constants.CanIds.INTAKE_CENTERING_MOTOR).apply {
+    private val centeringMotor = TalonFX(Constants.CanIds.INTAKE_CENTERING_MOTOR, CAN_BUS).apply {
         configurator.apply(MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive))
     }
 
