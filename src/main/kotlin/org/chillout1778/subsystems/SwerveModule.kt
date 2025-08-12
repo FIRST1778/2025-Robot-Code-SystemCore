@@ -90,12 +90,13 @@ class SwerveModule(
 
     var commandedVolts = 0.0
     fun driveState(state: SwerveModuleState) {
-        state.optimize(Rotation2d.fromRadians(turnPosition))
-        // val optimizedState = SwerveModuleState.optimize(state, Rotation2d.fromRadians(turnPosition))
-        // val goalTurnPosition = optimizedState.angle.radians
-        val goalTurnPosition = state.angle.radians
-        // val goalDriveVelocity = optimizedState.speedMetersPerSecond * cos(turnPosition - goalTurnPosition)
-        val goalDriveVelocity = state.speed * cos(turnPosition - goalTurnPosition)
+        val optimizedState = SwerveModuleState.optimize(
+            state,
+            Rotation2d.fromRadians(turnPosition)
+        )
+        val goalTurnPosition = optimizedState.angle.radians
+        val goalDriveVelocity = optimizedState.speed *
+                cos(turnPosition - goalTurnPosition)
         commandedVelocity = goalDriveVelocity
         turnMotor.setVoltage(turnPID.calculate(turnPosition, goalTurnPosition))
         commandedVolts = driveFeedforward.calculate(goalDriveVelocity, driveAcceleration)
