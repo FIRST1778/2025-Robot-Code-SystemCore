@@ -28,7 +28,7 @@ object Controls {
     val emptyInputs = DriveInputs(0.0, 0.0, 0.0, 0.0, AlignMode.None)
 
     val driverInputs get() = DriveInputs(
-        forward = driverController.getRawAxis(2),
+        forward = 0.1,
         left = -driverController.getRawAxis(3),
         rotation = -driverController.getRawAxis(0),
         deadzone = 0.05,
