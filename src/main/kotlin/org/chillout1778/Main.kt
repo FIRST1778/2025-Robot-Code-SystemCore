@@ -1,4 +1,6 @@
-package frc.robot
+@file:JvmName("Main")
+
+package org.chillout1778
 
 import edu.wpi.first.wpilibj.RobotBase
 
@@ -12,5 +14,5 @@ Do not add anything else to this file.
  * Main entry point. Do not edit this unless you change your main robot class
  */
 fun main() {
-    RobotBase.startRobot { Robot() }
+    RobotBase.startRobot { Robot }
 }
