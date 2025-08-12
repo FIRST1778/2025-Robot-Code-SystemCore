@@ -18,9 +18,12 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.chillout1778.Constants
+import org.chillout1778.subsystems.Elevator.height
 import kotlin.math.abs
 
 object Swerve: SubsystemBase() {
+    val CAN_BUS = "can_s0"
+
     private val gyro = Pigeon2(Constants.CanIds.GYRO).apply {
         configurator.apply(
             Pigeon2Configuration()
@@ -43,7 +46,8 @@ object Swerve: SubsystemBase() {
             canCoderID = Constants.CanIds.SWERVE_FRONT_LEFT_CANCODER,
             driveInverted = InvertedValue.CounterClockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
-            encoderOffset = Constants.Swerve.FRONT_LEFT_ENCODER_OFFSET
+            encoderOffset = Constants.Swerve.FRONT_LEFT_ENCODER_OFFSET,
+            canBus = CAN_BUS
         ),
         SwerveModule(
             name = "Front Right",
@@ -52,7 +56,8 @@ object Swerve: SubsystemBase() {
             canCoderID = Constants.CanIds.SWERVE_FRONT_RIGHT_CANCODER,
             driveInverted = InvertedValue.Clockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
-            encoderOffset = Constants.Swerve.FRONT_RIGHT_ENCODER_OFFSET
+            encoderOffset = Constants.Swerve.FRONT_RIGHT_ENCODER_OFFSET,
+            canBus = CAN_BUS
         ),
         SwerveModule(
             name = "Back Left",
@@ -61,7 +66,8 @@ object Swerve: SubsystemBase() {
             canCoderID = Constants.CanIds.SWERVE_BACK_LEFT_CANCODER,
             driveInverted = InvertedValue.CounterClockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
-            encoderOffset = Constants.Swerve.BACK_LEFT_ENCODER_OFFSET
+            encoderOffset = Constants.Swerve.BACK_LEFT_ENCODER_OFFSET,
+            canBus = CAN_BUS
         ),
         SwerveModule(
             name = "Back Right",
@@ -70,7 +76,8 @@ object Swerve: SubsystemBase() {
             canCoderID = Constants.CanIds.SWERVE_BACK_RIGHT_CANCODER,
             driveInverted = InvertedValue.Clockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
-            encoderOffset = Constants.Swerve.BACK_RIGHT_ENCODER_OFFSET
+            encoderOffset = Constants.Swerve.BACK_RIGHT_ENCODER_OFFSET,
+            canBus = CAN_BUS
         )
     )
 
@@ -120,15 +127,17 @@ object Swerve: SubsystemBase() {
 
     fun driveFieldRelative(speeds: ChassisSpeeds) {
         driveRobotRelative(
-            ChassisSpeeds.fromFieldRelativeSpeeds(
-                speeds,
-                estimatedPose.rotation
-            )
+            speeds.toRobotRelative(estimatedPose.rotation)
+//            ChassisSpeeds.fromFieldRelativeSpeeds(
+//                speeds,
+//                estimatedPose.rotation
+//            )
         )
     }
 
     fun driveRobotRelative(speeds: ChassisSpeeds) {
-        val discreteSpeeds = ChassisSpeeds.discretize(speeds, Robot.period)
+        val discreteSpeeds = speeds.discretize(Robot.period)
+        // val discreteSpeeds = ChassisSpeeds.discretize(speeds, Robot.period)
         val moduleStates = kinematics.toSwerveModuleStates(discreteSpeeds)
         for ((mod, state) in modules.zip(moduleStates)) {
             mod.driveState(state)
@@ -236,10 +245,10 @@ object Swerve: SubsystemBase() {
     override fun initSendable(builder: SendableBuilder?) {
         builder!!
         builder.addDoubleProperty("gyro angle", {Math.toDegrees(gyroAngle)}, {})
-        builder.addDoubleProperty("vision angle", {estimatedPose.rotation.degrees}, {})
+//        builder.addDoubleProperty("vision angle", {estimatedPose.rotation.degrees}, {})
         builder.addBooleanProperty("is red?", {Robot.isRedAlliance}, {})
         builder.addDoubleProperty("raw (not wrapped) gyro yaw", {gyro.rotation2d.radians}, {})
-        builder.addStringProperty("odometry pose", {poseEstimator.estimatedPosition.toString()}, {})
+//        builder.addStringProperty("odometry pose", {poseEstimator.estimatedPosition.toString()}, {})
 //        builder.addDoubleProperty("distance from starting pose", { stupidStartingTranslation.getDistance(estimatedPose.translation) }, {})
     }
 }

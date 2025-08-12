@@ -50,25 +50,25 @@ object Robot : TimedRobot() {
         Superstructure
         Swerve
         Vision
-        Lights
+//        Lights
 
         SmartDashboard.putData(Arm)
         SmartDashboard.putData(Elevator)
         SmartDashboard.putData(Intake)
         SmartDashboard.putData(Superstructure)
         SmartDashboard.putData(Vision)
-
-        for(trajectoryName in Choreo.availableTrajectories().filterNot{it == "VariablePoses"}) {
-            autoChooser.addOption(trajectoryName, Choreo.loadTrajectory<SwerveSample>(trajectoryName).get())
-        }
-
-
-        autoChooser.onChange { t ->
-            autoTrajectory = t
-            initializeAutonomousCommand()
-        }
-
-        SmartDashboard.putData(autoChooser)
+//
+//        for(trajectoryName in Choreo.availableTrajectories().filterNot{it == "VariablePoses"}) {
+//            autoChooser.addOption(trajectoryName, Choreo.loadTrajectory<SwerveSample>(trajectoryName).get())
+//        }
+//
+//
+//        autoChooser.onChange { t ->
+//            autoTrajectory = t
+//            initializeAutonomousCommand()
+//        }
+//
+//        SmartDashboard.putData(autoChooser)
 
 //        DriverStation.silenceJoystickConnectionWarning(true)
     }

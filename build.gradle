@@ -13,7 +13,7 @@ kotlin {
     jvmToolchain(17)
 }
 
-def ROBOT_MAIN_CLASS = "org.chillout1778.Main" // TODO: Update this if changing your package
+def ROBOT_MAIN_CLASS = "org.chillout1778.MainKt" // TODO: Update this if changing your package
 
 sourceSets {
     main {

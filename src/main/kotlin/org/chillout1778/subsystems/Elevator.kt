@@ -20,6 +20,8 @@ import kotlin.math.abs
 import kotlin.system.measureTimeMillis
 
 object Elevator: SubsystemBase() {
+    val CAN_BUS = "can_s4"
+
     enum class State(private val rawExtension: Double) {
         Down(0.0),
         PreHandoff(Units.inchesToMeters(36.0)),
@@ -53,10 +55,10 @@ object Elevator: SubsystemBase() {
         }
     }
 
-    private val mainMotor = TalonFX(Constants.CanIds.ELEVATOR_MAIN_MOTOR).apply {
+    private val mainMotor = TalonFX(Constants.CanIds.ELEVATOR_MAIN_MOTOR, CAN_BUS).apply {
         configurator.apply(Constants.Elevator.MOTOR_CONFIG)
     }
-    private val followerMotor = TalonFX(Constants.CanIds.ELEVATOR_FOLLOWER_MOTOR).apply {
+    private val followerMotor = TalonFX(Constants.CanIds.ELEVATOR_FOLLOWER_MOTOR, CAN_BUS).apply {
         setControl(Follower(mainMotor.deviceID, true))
     }
 
@@ -81,7 +83,7 @@ object Elevator: SubsystemBase() {
 
     var lastClampedSetpointForLogging: Double = 0.0
     fun clampSetpoint(s: Double): Double{
-        var ret: Double = 0.0
+        var ret: Double
         val time = measureTimeMillis {
             val armDesiredPositionSignum = Math.signum(Arm.desiredPosition)
             val interpolationTableInput = Math.PI - abs(MathUtil.angleModulus(
