@@ -22,7 +22,9 @@ import org.chillout1778.subsystems.Elevator.height
 import kotlin.math.abs
 
 object Swerve: SubsystemBase() {
-    val CAN_BUS = "can_s0"
+    val ENCODER_CAN_BUS = "can_s0"
+    val DRIVE_CAN_BUS = "can_s2"
+    val TURN_CAN_BUS = "can_s1"
 
     private val gyro = Pigeon2(Constants.CanIds.GYRO).apply {
         configurator.apply(
@@ -47,7 +49,9 @@ object Swerve: SubsystemBase() {
             driveInverted = InvertedValue.CounterClockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
             encoderOffset = Constants.Swerve.FRONT_LEFT_ENCODER_OFFSET,
-            canBus = CAN_BUS
+            encoderCanBus = ENCODER_CAN_BUS,
+            driveCanBus = DRIVE_CAN_BUS,
+            turnCanBus = TURN_CAN_BUS
         ),
         SwerveModule(
             name = "Front Right",
@@ -57,7 +61,9 @@ object Swerve: SubsystemBase() {
             driveInverted = InvertedValue.Clockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
             encoderOffset = Constants.Swerve.FRONT_RIGHT_ENCODER_OFFSET,
-            canBus = CAN_BUS
+            encoderCanBus = ENCODER_CAN_BUS,
+            driveCanBus = DRIVE_CAN_BUS,
+            turnCanBus = TURN_CAN_BUS
         ),
         SwerveModule(
             name = "Back Left",
@@ -67,7 +73,9 @@ object Swerve: SubsystemBase() {
             driveInverted = InvertedValue.CounterClockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
             encoderOffset = Constants.Swerve.BACK_LEFT_ENCODER_OFFSET,
-            canBus = CAN_BUS
+            encoderCanBus = ENCODER_CAN_BUS,
+            driveCanBus = DRIVE_CAN_BUS,
+            turnCanBus = TURN_CAN_BUS
         ),
         SwerveModule(
             name = "Back Right",
@@ -77,7 +85,9 @@ object Swerve: SubsystemBase() {
             driveInverted = InvertedValue.Clockwise_Positive,
             turnInverted  = InvertedValue.Clockwise_Positive,
             encoderOffset = Constants.Swerve.BACK_RIGHT_ENCODER_OFFSET,
-            canBus = CAN_BUS
+            encoderCanBus = ENCODER_CAN_BUS,
+            driveCanBus = DRIVE_CAN_BUS,
+            turnCanBus = TURN_CAN_BUS
         )
     )
 
