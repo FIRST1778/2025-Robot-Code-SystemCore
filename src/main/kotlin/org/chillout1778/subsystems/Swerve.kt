@@ -218,13 +218,13 @@ object Swerve: SubsystemBase() {
             }
     }
 
-//    val closestCoralScoringPose: Pose2d? get() {
-//        var poses = if (Robot.isRedAlliance) Constants.Field.redScoringPoses else Constants.Field.blueScoringPoses
-//        poses = poses.filter {
-//            it.translation.getDistance(estimatedPose.translation) < Constants.Swerve.MIN_NODE_DISTANCE
-//        }
-//        return poses.minByOrNull { score(it) }
-//    }
+    val closestCoralScoringPose: Pose2d? get() {
+        var poses = if (Robot.isRedAlliance) Constants.Field.redScoringPoses else Constants.Field.blueScoringPoses
+        poses = poses.filter {
+            it.translation.getDistance(estimatedPose.translation) < Constants.Swerve.MAX_NODE_DISTANCE)
+        }
+        return poses.minByOrNull { score(it) }
+    }
 
     val closestAlgaeGrabPose: Pose2d? get() {
         var poses = if (Robot.isRedAlliance) Constants.Field.redAlgaeGrabbingPose else Constants.Field.blueAlgaeGrabbingPose

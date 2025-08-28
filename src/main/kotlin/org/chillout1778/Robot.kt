@@ -22,11 +22,9 @@ import org.chillout1778.subsystems.*
 
 
 object Robot : TimedRobot() {
-    val isRedAlliance get() =
-        DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red
+    val isRedAlliance get() = false
 
-    val isOnRedSide get() =
-        Swerve.estimatedPose.x > (Constants.Field.FIELD_X_SIZE / 2)
+    val isOnRedSide get() = false
 
     val enableCoastModeSwitch = DigitalInput(Constants.DioIds.DISABLE_BREAK_MODE)
 
@@ -132,7 +130,7 @@ object Robot : TimedRobot() {
         if (!didAutoRun)
             Swerve.gyroAngle = if(isRedAlliance) Math.PI else 0.0
         Superstructure.makeZeroAllSubsystemsCommand().schedule()
-        Swerve.defaultCommand = TeleopDriveCommand(Controls::driverInputs)
+        Swerve.defaultCommand = TeleopDriveCommand(Controls::operatorInputs)
         Superstructure.defaultCommand = TeleopSuperstructureCommand()
     }
 

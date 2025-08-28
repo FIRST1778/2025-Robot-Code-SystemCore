@@ -118,7 +118,9 @@ class TeleopDriveCommand(
         val actualX = r * cos(theta) * Constants.Swerve.MAX_VELOCITY
         val actualY = r * sin(theta) * Constants.Swerve.MAX_VELOCITY
         val actualRotation = rotation * Constants.Swerve.MAX_ANGULAR_VELOCITY
-        return ChassisSpeeds(actualX, actualY, actualRotation)
+        return ChassisSpeeds(actualX * Constants.Swerve.OUTREACH_INPUT_MULTIPLIER,
+            actualY * Constants.Swerve.OUTREACH_INPUT_MULTIPLIER,
+            actualRotation * Constants.Swerve.OUTREACH_ROTATION_INPUT_MULTIPLIER)
     }
 
 }

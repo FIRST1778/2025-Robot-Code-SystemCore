@@ -189,6 +189,9 @@ object Constants{
     )
 
     object Swerve{
+        val OUTREACH_INPUT_MULTIPLIER = 0.5
+        val OUTREACH_ROTATION_INPUT_MULTIPLIER = 0.5
+
         val ALIGNMENT_TOLERANCE: Double = 0.04
         val STARTING_TOLERANCE: Double = 0.15
 
@@ -212,11 +215,11 @@ object Constants{
         }
         fun makeAlignDrivePID() = PIDController(5.0, 0.0, 0.01)
         fun makeBargeAlignDrivePID() = PIDController(6.0, 0.0, 0.0)
-        val maxAlignTranslationSpeed = 1.5
-        val maxAlignRotationSpeed = 2.5
-        val maxBargeAlignTranslationSpeed = 1.5
+        val maxAlignTranslationSpeed = 0.5
+        val maxAlignRotationSpeed = 1.5
+        val maxBargeAlignTranslationSpeed = 0.0
         val maxBargeAlignRotationSpeed = 1.5
-        const val MAX_NODE_DISTANCE = 3.0 // meters
+        const val MAX_NODE_DISTANCE = 0.8 // meters // TODO: Change if trying to align from too far away
         // How fast the robot can move in a straight line (meters/sec).
         val MAX_VELOCITY = (5800.0 / 60) / DRIVE_RATIO * WHEEL_RADIUS * 2*PI
         // How far the swerve modules are from (0,0).
@@ -247,7 +250,7 @@ object Constants{
             Slot0.kP = 80.0 // volts per rotation
             MotionMagic.MotionMagicJerk = 9999.0
             MotionMagic.MotionMagicAcceleration = 4.5
-            MotionMagic.MotionMagicCruiseVelocity = 2.0 // rps
+            MotionMagic.MotionMagicCruiseVelocity = 1.0 // rps
             CurrentLimits.StatorCurrentLimit = 70.0
             CurrentLimits.SupplyCurrentLimit = 50.0
         }
@@ -303,7 +306,7 @@ object Constants{
             Slot0.kP = 70.0
 //            MotionMagic.MotionMagicJerk = 9999.0
             MotionMagic.MotionMagicAcceleration = 14.0
-            MotionMagic.MotionMagicCruiseVelocity = 3.0
+            MotionMagic.MotionMagicCruiseVelocity = 1.5
         }
     }
 
@@ -320,7 +323,7 @@ object Constants{
             Slot0.kP = 160.0
             MotionMagic.MotionMagicJerk = 2000.0
             MotionMagic.MotionMagicAcceleration = 200.0
-            MotionMagic.MotionMagicCruiseVelocity = 2.0
+            MotionMagic.MotionMagicCruiseVelocity = 1.5
             MotorOutput.NeutralMode = NeutralModeValue.Coast
         }
 

@@ -65,7 +65,7 @@ object Intake : SubsystemBase(){
     // TODO: subsume factor of 2pi into gear ratio
     val angle get() = pivotMotor.position.valueAsDouble * 2*Math.PI
     val velocity get() = pivotMotor.velocity.valueAsDouble * 2*Math.PI
-    val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.touchpadButton
+    val hasCoral get() = !linebreak.get() || Controls.operatorController.hid.backButton
 //val hasCoral get() = Controls.operatorController.hid.circleButton
     val atSetpoint get() = Math.abs(angle - effectivePivotState.angleSetpoint) < Constants.Intake.SETPOINT_THRESHOLD
 
