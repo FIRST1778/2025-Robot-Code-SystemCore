@@ -66,10 +66,10 @@ object Controls {
     var lastScoringLevel = Superstructure.ScoringLevel.TROUGH
     val superstructureInputs: Superstructure.SuperstructureInputs get() {
         val level = when (operatorController.hid.pov) {
-            0 -> Superstructure.ScoringLevel.L4
-            270 -> Superstructure.ScoringLevel.L3
-            180 -> Superstructure.ScoringLevel.L2
-            90 -> Superstructure.ScoringLevel.TROUGH
+            1 -> Superstructure.ScoringLevel.L4
+            8 -> Superstructure.ScoringLevel.L3
+            4 -> Superstructure.ScoringLevel.L2
+            2 -> Superstructure.ScoringLevel.TROUGH
             else -> lastScoringLevel
         }
         lastScoringLevel = level
