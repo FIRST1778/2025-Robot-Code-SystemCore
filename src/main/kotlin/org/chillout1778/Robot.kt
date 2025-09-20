@@ -19,6 +19,7 @@ import org.chillout1778.commands.AutoRunnerCommand
 import org.chillout1778.commands.TeleopDriveCommand
 import org.chillout1778.commands.TeleopSuperstructureCommand
 import org.chillout1778.subsystems.*
+import kotlin.system.measureTimeMillis
 
 
 object Robot : TimedRobot() {
@@ -48,6 +49,7 @@ object Robot : TimedRobot() {
         Elevator
         Intake
         Superstructure
+        LoggingManager
         Swerve
         Vision
 //        Lights
@@ -58,25 +60,33 @@ object Robot : TimedRobot() {
         SmartDashboard.putData(Superstructure)
         SmartDashboard.putData(Vision)
 //
-//        for(trajectoryName in Choreo.availableTrajectories().filterNot{it == "VariablePoses"}) {
-//            autoChooser.addOption(trajectoryName, Choreo.loadTrajectory<SwerveSample>(trajectoryName).get())
-//        }
+        for(trajectoryName in Choreo.availableTrajectories().filterNot{it == "VariablePoses"}) {
+            autoChooser.addOption(trajectoryName, Choreo.loadTrajectory<SwerveSample>(trajectoryName).get())
+        }
 //
-//
-//        autoChooser.onChange { t ->
-//            autoTrajectory = t
-//            initializeAutonomousCommand()
-//        }
-//
-//        SmartDashboard.putData(autoChooser)
 
-//        DriverStation.silenceJoystickConnectionWarning(true)
+        autoChooser.onChange { t ->
+            autoTrajectory = t
+            initializeAutonomousCommand()
+        }
+//
+        SmartDashboard.putData(autoChooser)
+
+        DriverStation.silenceJoystickConnectionWarning(true)
     }
 
     var tickNumber: Long = 0
     override fun robotPeriodic() {
         tickNumber++
         CommandScheduler.getInstance().run()
+
+        val totalLoggingTime = measureTimeMillis {
+            LoggingManager.update()
+        }
+        if (totalLoggingTime > 5) {
+            println("3D logging code took $totalLoggingTime ms")
+            println("${LoggingManager.times}")
+        }
     }
 
     var wasCoastModeEnabled: Boolean = false

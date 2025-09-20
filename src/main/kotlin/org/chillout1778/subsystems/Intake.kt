@@ -102,6 +102,7 @@ object Intake : SubsystemBase(){
             RollerState.SlowIn
         }
         else r
+        //realRollerState = RollerState.Off
     }
     private val linebreak = DigitalInput(Constants.DioIds.INTAKE_LINEBREAK)
 
