@@ -31,9 +31,8 @@ object Robot : TimedRobot() {
 
     val enableCoastModeSwitch = DigitalInput(Constants.DioIds.DISABLE_BREAK_MODE)
 
-    var wasEnabledThenDisabled = false
     var wasEnabled = false
-
+    var wasEnabledLED = false
     private val autoChooser: SendableChooser<Trajectory<SwerveSample>> = SendableChooser()
 
     init {
@@ -92,7 +91,6 @@ object Robot : TimedRobot() {
     var wasCoastModeEnabled: Boolean = false
 
     override fun disabledInit() {
-        if (wasEnabled) wasEnabledThenDisabled = true
         wasEnabled = false
     }
     override fun disabledPeriodic() {
@@ -112,7 +110,7 @@ object Robot : TimedRobot() {
         Elevator.setCoastEnabled(false)
         Arm.setCoastEnabled(false)
         wasEnabled = true
-        wasEnabledThenDisabled = false
+        wasEnabledLED = true
     }
     // This is code for running autonomous Commands only in auto mode
     private var didAutoRun = false

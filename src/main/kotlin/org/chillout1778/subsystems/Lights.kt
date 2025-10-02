@@ -1,84 +1,61 @@
 package org.chillout1778.subsystems
 
-import edu.wpi.first.units.Units
-import edu.wpi.first.units.Units.Hertz
-import edu.wpi.first.units.Units.Seconds
-import edu.wpi.first.units.measure.Frequency
-import edu.wpi.first.units.measure.Time
-import edu.wpi.first.wpilibj.AddressableLED
-import edu.wpi.first.wpilibj.AddressableLEDBuffer
-import edu.wpi.first.wpilibj.LEDPattern
+import com.ctre.phoenix6.configs.LEDConfigs
+import com.ctre.phoenix6.controls.*
+import com.ctre.phoenix6.hardware.CANdle
+import com.ctre.phoenix6.signals.AnimationDirectionValue
+import com.ctre.phoenix6.signals.LarsonBounceValue
+import com.ctre.phoenix6.signals.RGBWColor
+import com.ctre.phoenix6.signals.StripTypeValue
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.wpilibj.util.Color
 import edu.wpi.first.wpilibj2.command.SubsystemBase
+import org.chillout1778.Constants
 import org.chillout1778.Robot
 import kotlin.math.abs
 
-// right - 34 leds, left - 33, cross - 20
+object Candle: SubsystemBase() {
+    val CANDLE_CAN_BUS = "can_s3"
 
-object Lights: SubsystemBase() {
-    private val LENGTH = 86 // probs should be a constant
-    private var leds: AddressableLED = AddressableLED(3).apply {
-        setColorOrder(AddressableLED.ColorOrder.kRGB)
-    }
-    var ledBuff : AddressableLEDBuffer = AddressableLEDBuffer(LENGTH)
+    private var leds: CANdle = CANdle(Constants.CanIds.CANDLE, CANDLE_CAN_BUS)
 
-    var rightSegment = ledBuff.createView(0, 32) // right segment
-    var crossSegment = ledBuff.createView(33, 52) // cross segment
-    var leftSegment = ledBuff.createView(53, 85).reversed() // left segment
-
-    var batteryIndicator = ledBuff.createView(34, 48) // battery charge progress bar
-    var batteryIndicatorMirror = ledBuff.createView(49, 53).reversed()
-
-    var blackPattern = LEDPattern.solid(Color.kBlack)
     var lightsTimer = Timer()
 
     init {
+        leds.configurator.apply(LEDConfigs().withStripType(StripTypeValue.RGB))
+
         lightsTimer.reset()
         lightsTimer.start()
-
-        leds.setLength(LENGTH)
-        leds.start()
     }
 
-
-   override fun periodic() {
-       val status = getDisabledStatus()
-       if (Robot.isEnabled) {
-           if (RobotController.isBrownedOut()) {
-               writeLedColor(LedColors.PoopBrown)
-           } else if (!status.CANHealthy) {
-               writeLedColor(LedColors.BadRed)
-           } else if (Swerve.isAligned) {
+    override fun periodic() {
+        val status = getDisabledStatus()
+        if (Robot.isEnabled) {
+            if (RobotController.isBrownedOut()) {
+                writeLedColor(Ranges.Strip, LedColors.PoopBrown)
+            } else if (!status.CANHealthy) {
+                writeLedColor(Ranges.Strip, LedColors.BadRed)
+            } else if (Swerve.isAligned) {
 //                nuclearRats(3.0,
 //                    if (Superstructure.inputs.wantedScoringLevel == Superstructure.ScoringLevel.TROUGH)
 //                        LedColors.LightBlue
 //                    else
 //                        LedColors.DarkBlue)
-               blinkGreen()
-           } else if (Arm.hasObject) {
-               writeLedColor(LedColors.PureWhite)
-           } else if (Intake.hasCoral) {
-               writeLedColor(LedColors.LightBlue)
-           } else {
-               writeLedColor(LedColors.DarkBlue)
-           }
-           if (Arm.isArmStuck) {
-               setCrossbarColor(LedColors.BadRed)
-           }
-       } else {
-           writeDisabledStatus(status)
-           disabledAnimations()
-       }
-
-       leds.setData(ledBuff)
-   }
-
-
-
-    fun writeLedColor(c: LedColors) {
-        c.solidPattern.applyTo(ledBuff)
+                blinkLed(Ranges.Strip, Constants.LEDs.ALLIGNMENT_BLINK_SPEED, LedColors.GoodGreen)
+            } else if (Arm.hasObject) {
+                writeLedColor(Ranges.Strip, LedColors.PureWhite)
+            } else if (Intake.hasCoral) {
+                writeLedColor(Ranges.Strip, LedColors.LightBlue)
+            } else {
+                writeLedColor(Ranges.Strip, LedColors.DarkBlue)
+            }
+            if (Arm.isArmStuck) {
+                blinkLed(Ranges.Cross, Constants.LEDs.ARM_STUCK_BLINK_SPEED, LedColors.WarningYellow)
+            }
+        } else {
+            writeDisabledStatus(status)
+            disabledAnimations()
+        }
     }
 
     data class RobotStatus(
@@ -90,15 +67,24 @@ object Lights: SubsystemBase() {
         val intakeHasCoral: Boolean,
     )
 
-    enum class LedColors(val color: Color, val solidPattern: LEDPattern = LEDPattern.solid(color)) {
-        GoodGreen(Color(0, 255, 0)),
-        BadRed(Color(255, 0, 0)),
-        WarningYellow(Color(255, 255, 0)),
-        PureWhite(Color(255, 255, 255)),
-        LightBlue(Color(0, 175, 255)),
-        DarkBlue(Color(0, 0, 255)),
-        PoopBrown(Color(160,82,45)),
-        TotalBlack(Color.kBlack),
+    enum class LedColors(val color: RGBWColor) {
+        GoodGreen(RGBWColor(0,255,0,0)),
+        BadRed(RGBWColor(255, 0, 0, 0)),
+        WarningYellow(RGBWColor(255, 255, 0, 0)),
+        PureWhite(RGBWColor(255, 255, 255, 0)),
+        LightBlue(RGBWColor(0, 175, 255, 0)),
+        DarkBlue(RGBWColor(0, 0, 255, 0)),
+        PoopBrown(RGBWColor(160,82,45, 0)),
+        SpaceBlack(RGBWColor(0,0,0,0)),
+    }
+
+    enum class Ranges(val start: Int, val end: Int) {
+        Whole(0, Constants.LEDs.LAST_ID),
+        Strip(8, Constants.LEDs.LAST_ID),
+        Right(8, 39),
+        Cross(40, 59),
+        Left(60, Constants.LEDs.LAST_ID),
+        Candle(0,7),
     }
 
     fun getDisabledStatus(): RobotStatus {
@@ -108,102 +94,99 @@ object Lights: SubsystemBase() {
         return RobotStatus(
             CANHealthy = Arm.armPivotMotor.isConnected && Arm.rollerMotor.isConnected,
             armCorrectOrientation = abs(Arm.closeClampedPosition()) == 0.5,
-            batteryVoltage = 12.7,
+            batteryVoltage = 12.7, //temporary disabled
             camerasConnected = Vision.allConnected(),
             brakeMode = !Robot.wasCoastModeEnabled,
             intakeHasCoral = Intake.hasCoral,
         )
     }
 
-    fun boolColor(b: Boolean) = if (b) LedColors.DarkBlue.color else LedColors.BadRed.color
-
-    var allChecksGood = false
 
     fun writeDisabledStatus(state: RobotStatus) {
-        blackPattern.applyTo(ledBuff)
-        LedColors.DarkBlue.solidPattern.applyTo(crossSegment)
+        writeLedColor(Ranges.Cross, LedColors.DarkBlue)
 
-        ledBuff.setLED(48, boolColor(state.camerasConnected))
-        ledBuff.setLED(47, boolColor(state.camerasConnected))
+        writeLedRange(47, 48, DisabledStatusIndicator(state.camerasConnected))
 
-        ledBuff.setLED(46, boolColor(state.CANHealthy))
-        ledBuff.setLED(45, boolColor(state.CANHealthy))
+        writeLedRange(45, 46, DisabledStatusIndicator(state.CANHealthy))
 
-        ledBuff.setLED(44, boolColor(state.armCorrectOrientation))
-        ledBuff.setLED(43, boolColor(state.armCorrectOrientation))
+        writeLedRange(43, 44, DisabledStatusIndicator(state.armCorrectOrientation))
 
-        ledBuff.setLED(42, boolColor(state.brakeMode))
-        ledBuff.setLED(41, boolColor(state.brakeMode))
+        writeLedRange(41, 42, DisabledStatusIndicator(state.brakeMode))
 
-        ledBuff.setLED(40, boolColor(!state.intakeHasCoral))
-        ledBuff.setLED(39, boolColor(!state.intakeHasCoral))
+        writeLedRange(39, 40, DisabledStatusIndicator(!state.intakeHasCoral))
     }
 
-    var progressBarAnimation: Double = 0.0
-    var disabledRainbow = LEDPattern.rainbow(255, 255)
-                         .scrollAtRelativeSpeed(Frequency.ofBaseUnits(0.5, Units.Hertz))
-
     fun disabledAnimations() {
-        if (Robot.wasEnabledThenDisabled && lightsTimer.get() <= 5.0) {
-            disabledRainbow.applyTo(rightSegment)
-            disabledRainbow.applyTo(leftSegment)
-            lightsTimer.restart()
-        } else if (Robot.wasEnabledThenDisabled && lightsTimer.get() > 5.0) {
-            Robot.wasEnabledThenDisabled = false
-            lightsTimer.restart()
-        // first two seconds after robot code boots up, complete a blue progressBar
-        } else if (lightsTimer.get() <= 2.0) {
-
-            progressBarAnimation += 0.02
-
-            if (progressBarAnimation >= 1.0) {
-                progressBarAnimation = 0.0
+        if (Robot.wasEnabledLED) {
+            if (lightsTimer.get() <= 5) {
+                leds.setControl(RainbowAnimation(Ranges.Strip.start, Ranges.Strip.end).withFrameRate(2.0))
+            } else {
+                Robot.wasEnabledLED = false
+                lightsTimer.restart()
             }
+        } else {
+            if (lightsTimer.get() <= 2) {
+                leds.setControl(
+                    ColorFlowAnimation(Ranges.Left.start, Ranges.Left.end)
+                        .withColor(LedColors.LightBlue.color)
+                        .withFrameRate(0.5)
+                        .withDirection(AnimationDirectionValue.Forward))
 
-            var progressBarPattern = LEDPattern.solid(LedColors.LightBlue.color)
-                .mask(LEDPattern.progressMaskLayer {progressBarAnimation})
+                leds.setControl(
+                    ColorFlowAnimation(Ranges.Right.start, Ranges.Right.end)
+                        .withColor(LedColors.LightBlue.color)
+                        .withFrameRate(0.5)
+                        .withDirection(AnimationDirectionValue.Backward))
 
-            progressBarPattern.applyTo(rightSegment)
-            progressBarPattern.applyTo(leftSegment)
+            } else if (lightsTimer.get() % 10.0 <= 1.0) {
+                leds.setControl(
+                    LarsonAnimation(Ranges.Left.start, Ranges.Left.end)
+                        .withColor(LedColors.LightBlue.color)
+                        .withFrameRate(1.0)
+                        .withBounceMode(LarsonBounceValue.Front))
 
-            
+                leds.setControl(
+                    LarsonAnimation(Ranges.Right.start, Ranges.Right.end)
+                        .withColor(LedColors.LightBlue.color)
+                        .withFrameRate(1.0)
+                        .withBounceMode(LarsonBounceValue.Front))
 
-        // then recursively, every 10 seconds run a light across the bar
-        } else if (lightsTimer.get() % 10.0 <= 1.0) {
-            nuclearRats(2.0, overlayColor = LedColors.LightBlue)
+            } else {
+                FireAnimation(Ranges.Left.start, Ranges.Left.end)
+                    .withFrameRate(1.0)
+                    .withDirection(AnimationDirectionValue.Forward)
+
+                FireAnimation(Ranges.Right.start, Ranges.Right.end)
+                    .withFrameRate(1.0)
+                    .withDirection(AnimationDirectionValue.Backward)
+            }
         }
     }
 
-    fun nuclearRats(frequency: Double = 4.0, baseColor: LedColors = LedColors.TotalBlack,
-                    overlayColor: LedColors = LedColors.GoodGreen ) {
-        val overlayStepsPattern = LEDPattern.gradient(
-            LEDPattern.GradientType.kContinuous,
-            baseColor.color,
-            overlayColor.color
-        )
-        val overlayStepsFinal = overlayStepsPattern.scrollAtRelativeSpeed(Frequency.ofBaseUnits(frequency, Units.Hertz))
+    fun DisabledStatusIndicator(b: Boolean) = if (b) LedColors.DarkBlue else LedColors.BadRed
 
-        val overlayCenterMask = LEDPattern.solid(baseColor.color)
-        val overlayCenterFlashed = overlayCenterMask.blink(Time.ofBaseUnits(1.0/frequency, Units.Seconds),
-                                                            Time.ofBaseUnits(1.0/frequency, Units.Seconds)
-        )
-        val overlayFinalPattern = overlayCenterMask.overlayOn(overlayCenterFlashed)
-        overlayStepsFinal.applyTo(leftSegment)
-        overlayStepsFinal.applyTo(rightSegment)
-        if (baseColor != LedColors.TotalBlack)
-            overlayFinalPattern.applyTo(crossSegment)
-        
+
+    fun writeLedColor(range: Ranges, c: LedColors) {
+        leds.setControl(SolidColor(range.start, range.end).withColor(c.color))
     }
 
-    val blinkyPattern = LEDPattern.solid(LedColors.GoodGreen.color).blink(Seconds.of(0.15))
-
-    fun blinkGreen() {
-        blinkyPattern.applyTo(ledBuff)
-        
+    fun writeLedRange(start: Int, end: Int, c: LedColors) {
+        leds.setControl(SolidColor(start, end).withColor(c.color))
     }
 
-    fun setCrossbarColor(c: LedColors) {
-        c.solidPattern.applyTo(crossSegment)
+    fun blinkLed(range: Ranges, freq: Double, c: LedColors) {
+        leds.setControl(StrobeAnimation(range.start, range.end).withColor(c.color).withFrameRate(freq))
     }
 
+    fun slotClear() {
+        for (i in 0..7) {
+            leds.setControl(EmptyAnimation(i))
+        }
+    }
+
+    object nuclearRats {
+        //In honor of OG nuclearRats
+        fun feed() {}
+        fun pet() {}
+    }
 }

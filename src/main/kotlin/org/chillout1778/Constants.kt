@@ -41,6 +41,8 @@ object Constants{
         const val INTAKE_CENTERING_MOTOR = 19
 
         const val GYRO = 30
+
+        const val CANDLE = 40
     }
     object DioIds{
         const val ARM_ABSOLUTE_ENCODER = 0
@@ -332,5 +334,18 @@ object Constants{
 
         const val ULTRASONIC_SENSOR_THRESHOLD = 0.02
 
+    }
+
+    object LEDs {
+        //Indices 0-7 control the onboard LEDs
+        val LENGTH = 86
+        val LAST_ID = LENGTH + 7
+
+        // right - 34 leds, left - 33, cross - 20
+
+
+        // In Hz
+        val ALLIGNMENT_BLINK_SPEED = 10.0
+        val ARM_STUCK_BLINK_SPEED = 5.0
     }
 }
