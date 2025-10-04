@@ -14,7 +14,7 @@ import org.chillout1778.Constants
 import org.chillout1778.Robot
 import kotlin.math.abs
 
-object Candle: SubsystemBase() {
+object Lights: SubsystemBase() {
     val CANDLE_CAN_BUS = "can_s3"
 
     private var leds: CANdle = CANdle(Constants.CanIds.CANDLE, CANDLE_CAN_BUS)
