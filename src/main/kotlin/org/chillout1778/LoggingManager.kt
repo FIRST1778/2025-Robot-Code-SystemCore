@@ -71,7 +71,7 @@ object LoggingManager {
             )
         })
         times.add(measureTimeMillis {
-            intakePublisher.set(intakePose.rotateBy(Rotation3d(Intake.angle, 0.0, 0.0)))
+            intakePublisher.set(intakePose.rotateBy(Rotation3d(0.0,Intake.angle, 0.0)))
         })
         times.add(measureTimeMillis {
             swervePublisher.set(Swerve.moduleStates)

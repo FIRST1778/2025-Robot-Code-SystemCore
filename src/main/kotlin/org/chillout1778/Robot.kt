@@ -40,6 +40,8 @@ object Robot : TimedRobot() {
         HAL.reportUsage("Language", "Kotlin")
 
         // Start logging NetworkTables changes to a USB drive or the RoboRIO.
+
+
         DataLogManager.start()
 
         // Initialize subsystem objects just by referencing them
@@ -94,7 +96,7 @@ object Robot : TimedRobot() {
         wasEnabled = false
     }
     override fun disabledPeriodic() {
-        val pressed = !enableCoastModeSwitch.get()
+        val pressed = enableCoastModeSwitch.get()
         if (!wasCoastModeEnabled && pressed) { // rising edge
             Elevator.setCoastEnabled(true)
             Arm.setCoastEnabled(true)
