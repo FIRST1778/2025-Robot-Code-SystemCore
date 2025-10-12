@@ -26,8 +26,24 @@ class TeleopDriveCommand(
     val yPID: PIDController = Constants.Swerve.makeAlignDrivePID()
     val turnPID: PIDController = Constants.Swerve.makeAlignTurnPID()
 
+    val tickThreshold = 150
+    var tickCount = 0
+    var lastInputs = DriveInputs(0.0, 0.0, 0.0, 0.0, Controls.AlignMode.None)
+
     override fun execute() {
-        var inputs = driveInputsSupplier.get()
+        val updatedInputs = driveInputsSupplier.get()
+        if (lastInputs.forward == updatedInputs.forward && lastInputs.left == updatedInputs.left && lastInputs.rotation == updatedInputs.rotation) {
+            tickCount++
+        } else {
+            tickCount = 0
+        }
+
+        var inputs = if (tickCount >= tickThreshold) {
+            updatedInputs = DriveInputs(0.0, 0.0, 0.0, 0.0, Controls.AlignMode.None)
+        } else {
+            updatedInputs
+        }
+
         if (Robot.isRedAlliance)
             inputs = inputs.redFlipped
 
